@@ -99,6 +99,7 @@
     "@vinejs/vine": "^3.0.0",
     "adonis-autoswagger": "^3.63.0",
     "api": "link:",
+    "axios": "^1.9.0",
     "flydrive": "^1.0.2",
     "jsonwebtoken": "^9.0.2",
     "luxon": "^3.4.4",

@@ -11,6 +11,8 @@ import router from '@adonisjs/core/services/router'
 import transmit from '@adonisjs/transmit/services/main'
 import swagger from '#config/swagger'
 import AutoSwagger from 'adonis-autoswagger'
+// POC start/routes.ts
+import '#apps/POC_keycloak/routes'
 
 // returns swagger in YAML
 router.get('/swagger', async () => {
