@@ -1,6 +1,7 @@
-import OidcController from '#apps/POC_keycloak/oidc_controller'
-import router from '@adonisjs/core/services/router'
+// apps/POC_Keycloak/routes.ts
 
-router.get('/auth/keycloak/callback', async (ctx) => {
-  return OidcController.callback(ctx)
-})
+import router from '@adonisjs/core/services/router'
+import OidcController from './oidc_controller.js'
+
+router.get('/auth/keycloak/login', [OidcController, 'redirectToLogin'])
+router.get('/auth/keycloak/callback', [OidcController, 'handleCallback'])

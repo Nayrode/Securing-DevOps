@@ -48,6 +48,6 @@ router.use([
 export const middleware = router.named({
   guest: () => import('#apps/shared/middleware/guest_middleware'),
   auth: () => import('#apps/shared/middleware/auth_middleware'),
-  //POC import
-  oidc: () => import('#apps/POC_keycloak/keycloak_auth_middleware'),
+  // POC import routes
+  oidc: () => import('#apps/POC_keycloak/auth_middleware'),
 })

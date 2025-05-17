@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Exit on any error
-# set -e
+set -e
 
 # --- Frontend setup ---
 echo "🖼️  Setting up Frontend..."

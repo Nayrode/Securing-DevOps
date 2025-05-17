@@ -24,8 +24,12 @@ export function ServersNavigationFeature() {
     dispatch({ type: 'CLOSE_WEBRTC' })
     dispatch(resetStore())
     logout()
-    navigate('/authentication/signin')
-  }
+    
+    // POC : Redirect to Keycloak logout URL
+    const realm = "beep-realm"
+    const keycloakLogoutUrl = `http://localhost:8080/realms/${realm}/protocol/openid-connect/logout`
+    window.location.href = keycloakLogoutUrl
+    }
 
   return (
     <ServersNavigation

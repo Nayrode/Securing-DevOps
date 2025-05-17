@@ -1,11 +1,7 @@
 #!/bin/bash
 
 # Exit on any error
-# set -e
-
-# --- Keycloak setup ---
-echo "🔑 Setting up Keycloak..."
-docker compose up -d
+set -e
 
 # --- API setup ---
 echo "🛠️  Setting up API..."

@@ -15,7 +15,7 @@ Connecte-toi avec admin / admin
     * Client Type : OpenID Connect
     * Client authentication : ON
     * Root URL : http://localhost:3333
-    * Valid redirect URIs : http://localhost:3333/auth/keycloak/callback
+    * Valid redirect URIs : http://localhost:4200/servers/discover
     * Enregistre, récupère ton client_secret
 * Créer un Utilisateur de test dans Users avec mot de passe défini
 
@@ -33,5 +33,5 @@ Ouvrir un autre terminal
 
 ### 5. Accès à l'autentification via Keycloak
 ```bash
-http://localhost:8080/realms/beep-realm/protocol/openid-connect/auth?client_id=beep-client&response_type=code&scope=openid&redirect_uri=http://localhost:3333/auth/keycloak/callback
+http://localhost:8080/realms/beep-realm/protocol/openid-connect/auth?client_id=beep-client&response_type=code&scope=openid&redirect_uri=http://localhost:4200/servers/discover
 ```
