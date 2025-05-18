@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "TRUC : $GOOGLE_CLIENT_ID"
+
 /opt/keycloak/bin/kc.sh start-dev > /tmp/keycloak.log 2>&1 &
 KEYCLOAK_PID=$!
 
@@ -46,8 +48,8 @@ echo "Keycloak est prêt, configuration..."
   -s alias=google \
   -s providerId=google \
   -s enabled=true \
-  -s 'config.clientId=__GOOGLE_CLIENT_ID__' \
-  -s 'config.clientSecret=__GOOGLE_CLIENT_SECRET__' \
+  -s 'config.clientId='"$GOOGLE_CLIENT_ID" \
+  -s 'config.clientSecret='"$GOOGLE_CLIENT_SECRET" \
   -s 'config.defaultScope=openid email profile' \
   -s 'config.useJwksUrl=true' \
   -s 'config.syncMode=IMPORT'
