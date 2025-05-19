@@ -9,29 +9,27 @@ docker-compose up -d
 ### 2. Configuration de Keycloak
 Accède à http://localhost:8080/admin
 Connecte-toi avec admin / admin
-Étapes rapides :
-* Créer un Realm : beep-realm
-* Créer un Client : beep-client
-    * Client Type : OpenID Connect
-    * Client authentication : ON
-    * Root URL : http://localhost:3333
-    * Valid redirect URIs : http://localhost:4200/servers/discover
-    * Enregistre, récupère ton client_secret
-* Créer un Utilisateur de test dans Users avec mot de passe défini
+On y retrouve :
+* Un Realm : beep-realm
+* Un Client : beep-client
+* Un Utilisateur de test : vanilla / vanilla123
 
-### 3. Modification du .env
-changer la valeur de la variable ```KEYCLOAK_CLIENT_SECRET``` avec la valuer du client crée.
-
-### 4. Lancement du projet
+### 4. Lancement du POC
+Dans un premier terminal lancer le back : 
 ```bash
 ./api_start.sh
 ```
-Ouvrir un autre terminal 
+Ouvrir un autre terminal et lancer le front :
 ```bash
 ./front_start.sh
 ```
+Dans un troisième terminnal lancer Keycloak :
+```bash
+docker compose up --build
+```
 
 ### 5. Accès à l'autentification via Keycloak
+Vous pouvez accéder à la page d'authentification de Keycloak via le liens :
 ```bash
-http://localhost:8080/realms/beep-realm/protocol/openid-connect/auth?client_id=beep-client&response_type=code&scope=openid&redirect_uri=http://localhost:4200/servers/discover
+http://localhost:3333/auth/keycloak/login
 ```

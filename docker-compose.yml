@@ -10,6 +10,8 @@ services:
       KC_DB: dev-mem
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
     volumes:
       - ./keycloak_init.sh:/opt/keycloak/keycloak_init.sh
     entrypoint: ["/bin/bash", "/opt/keycloak/keycloak_init.sh"]

@@ -1,7 +1,6 @@
 #!/bin/bash
 
-echo "TRUC : $GOOGLE_CLIENT_ID"
-
+# Verifier si keycloak est lancé
 /opt/keycloak/bin/kc.sh start-dev > /tmp/keycloak.log 2>&1 &
 KEYCLOAK_PID=$!
 
