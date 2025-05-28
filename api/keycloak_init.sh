@@ -13,7 +13,7 @@ echo "Keycloak est prêt, configuration..."
 
 # Auth admin
 /opt/keycloak/bin/kcadm.sh config credentials \
-  --server http://localhost:8080 \
+  --server "$KEYCLOAK_BASE_URL" \
   --realm master \
   --user admin \
   --password admin
@@ -31,8 +31,8 @@ echo "Keycloak est prêt, configuration..."
   -s publicClient=false \
   -s serviceAccountsEnabled=true \
   -s protocol=openid-connect \
-  -s 'redirectUris=["http://localhost:3333/*"]' \
-  -s 'webOrigins=["http://localhost:4200"]' \
+  -s "redirectUris=[\"${KEYCLOAK_REDIRECT_URIS}\"]" \
+  -s "webOrigins=[\"${FRONTEND_URL}\"]" \
   -s standardFlowEnabled=true \
   -s secret=beep-client-secret
 
