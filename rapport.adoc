@@ -1,0 +1,8 @@
+= Rapport de projet
+:toc:
+
+<<<
+include::./data/introduction.adoc[]
+
+<<<
+include::./data/diagramme.adoc[]
