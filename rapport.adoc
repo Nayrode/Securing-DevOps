@@ -26,22 +26,32 @@ Ces analyses permettent de prendre des mesures proactives avant la mise en produ
 
 == Résultats des scans
 
+=== SAST IriusRisk
+
 Voici les 5 *threats* les plus critiques identifiés dans l'application Beep, principalement centrés autour du protocole SMTP :
 
-* **Thread 1** : `SMTP` – *Mise en œuvre de STARTTLS*  
+* **Threat 1** : `SMTP` – *Mise en œuvre de STARTTLS*  
   → Implémenter STARTTLS pour chiffrer la transmission des e-mails et éviter l’interception de données sensibles.
 
-* **Thread 2** : `SMTP` – *Limiter le taux d’envoi (Rate Limiting)*  
+* **Threat 2** : `SMTP` – *Limiter le taux d’envoi (Rate Limiting)*  
   → Prévenir les attaques de type flood en limitant le nombre de messages envoyés par IP ou utilisateur.
 
-* **Thread 3** : `SMTP` – *Configuration sécurisée et audits réguliers*  
+* **Threat 3** : `SMTP` – *Configuration sécurisée et audits réguliers*  
   → Éviter les fuites de données dues à une mauvaise configuration en auditant régulièrement les serveurs SMTP.
 
-* **Thread 4** : `SMTP` – *Authentification des e-mails*  
+* **Threat 4** : `SMTP` – *Authentification des e-mails*  
   → Protéger contre l’usurpation d’identité via SPF, DKIM et DMARC.
 
-* **Thread 5** : `SMTP` – *Authentification et prévention du relai non autorisé*  
+* **Threat 5** : `SMTP` – *Authentification et prévention du relai non autorisé*  
   → Empêcher l’utilisation non autorisée du serveur SMTP comme relais en appliquant des contrôles stricts.
+
+=== SAST Snyk
+
+Le scan Snyk a révélé plusieurs vulnérabilités dans les dépendances du projet Beep, notamment :
+
+* **Vulnérabilité 1** : `Dockerfile` – Mettre à jour la verison de Node vers 22.16.0 pour corriger des failles critiques.
+
+Dautres vinérabilitée ont étées trouvées, notament l'utilisation de la fonction send() dans le code source, qui peut exposer des données sensibles si mal configurée.
 
 == Exploitation des résultats et plan d'action
 
