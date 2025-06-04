@@ -2,7 +2,55 @@
 :toc:
 
 <<<
-include::./data/introduction.adoc[]
+== Introduction
 
-<<<
-include::./data/diagramme.adoc[]
+**Beep** est une application de messagerie sociale permettant aux utilisateurs de **communiquer, créer des communautés et interagir en temps réel**. Elle propose une expérience complète mêlant messagerie instantanée, appels audio/vidéo, partage de fichiers et gestion collaborative de serveurs (espaces de discussion).
+
+Son architecture repose sur une infrastructure distribuée intégrant un backend robuste, une interface utilisateur réactive, ainsi qu’un service de messagerie électronique basé sur le protocole SMTP.
+
+Ce rapport détaille les résultats de ces analyses, les risques identifiés, ainsi que les actions correctives recommandées pour renforcer la sécurité globale du projet.
+
+== Diagramme d'architecture
+
+.Diagramme d'architecture du projet Beep
+image::./diagramme.png[]
+
+== Pourquoi effectuer des scans de sécurité
+
+L’objectif des scans de sécurité est de détecter les vulnérabilités potentielles dans l’application afin de renforcer sa résilience face aux attaques. Deux types de scans ont été réalisés :
+
+- **SAST (Static Application Security Testing)** : Analyse du code source pour identifier les failles de sécurité avant l’exécution.
+- **Scan Trilli** : Analyse ciblée des configurations de l’infrastructure, notamment le service SMTP.
+
+Ces analyses permettent de prendre des mesures proactives avant la mise en production et de se conformer aux bonnes pratiques de sécurité logicielle.
+
+== Résultats des scans
+
+Voici les 5 *threats* les plus critiques identifiés dans l'application Beep, principalement centrés autour du protocole SMTP :
+
+* **Thread 1** : `SMTP` – *Mise en œuvre de STARTTLS*  
+  → Implémenter STARTTLS pour chiffrer la transmission des e-mails et éviter l’interception de données sensibles.
+
+* **Thread 2** : `SMTP` – *Limiter le taux d’envoi (Rate Limiting)*  
+  → Prévenir les attaques de type flood en limitant le nombre de messages envoyés par IP ou utilisateur.
+
+* **Thread 3** : `SMTP` – *Configuration sécurisée et audits réguliers*  
+  → Éviter les fuites de données dues à une mauvaise configuration en auditant régulièrement les serveurs SMTP.
+
+* **Thread 4** : `SMTP` – *Authentification des e-mails*  
+  → Protéger contre l’usurpation d’identité via SPF, DKIM et DMARC.
+
+* **Thread 5** : `SMTP` – *Authentification et prévention du relai non autorisé*  
+  → Empêcher l’utilisation non autorisée du serveur SMTP comme relais en appliquant des contrôles stricts.
+
+== Exploitation des résultats et plan d'action
+
+Les résultats obtenus orientent la sécurisation du serveur SMTP, composant central de Beep. Voici les actions prioritaires recommandées :
+
+- Mettre à jour la configuration du serveur SMTP pour activer STARTTLS et restreindre les connexions non sécurisées.
+- Implémenter une politique de *rate limiting* adaptée aux usages réels.
+- Mettre en place des audits automatiques et périodiques de la configuration SMTP.
+- Ajouter les enregistrements DNS nécessaires pour SPF, DKIM et DMARC afin de renforcer la légitimité des e-mails.
+- Appliquer une authentification forte sur les comptes SMTP et désactiver tout relai non autorisé.
+
+Ces mesures amélioreront considérablement la sécurité de l’application et réduiront le risque de compromission via le canal de communication e-mail.

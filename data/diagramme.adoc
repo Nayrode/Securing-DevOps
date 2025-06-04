@@ -1,4 +1,0 @@
-== Diagramme d'architecture
-
-.Diagramme d'architecture du projet Beep
-image::./data/diagramme.png[]
