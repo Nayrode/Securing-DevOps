@@ -5,7 +5,7 @@ on: [push, pull_request]
 defaults:
   run:
     shell: bash
-    working-directory: ./api
+    working-directory: api
 
 env:
   REGISTRY: ghcr.io
@@ -115,62 +115,50 @@ jobs:
       attestations: write
       id-token: write
 
-    outputs:
-      image_tag: ${{ steps.meta.outputs.version }}
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Log in to the Container registry
-      uses: docker/login-action@v3
-      with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Extract metadata (tags, labels) for Docker
-      id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-        flavor: |
-          latest=true
-        tags: |
-          type=semver,pattern={{version}}
-          type=sha,enable=false
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          flavor: |
+            latest=true
+          tags: |
+            type=sha,enable=true
 
-    - name: Build and push Docker image
-      id: push
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        
-    - name: Generate artifact attestation
-      uses: actions/attest-build-provenance@v2
-      with:
-        subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-  scan-vulnerabilities:
-    name: Scan vulnerabilities
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-    - name: Download Trivy
-      run: curl https://raw.githubusercontent.com/aquasecurity/trivy/7735ec432a83d5446d13a593ab3b27dd02649ca1/contrib/markdown.tpl -o markdown.tpl
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./api
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          
+      - name: Download Trivy
+        run: curl https://raw.githubusercontent.com/aquasecurity/trivy/7735ec432a83d5446d13a593ab3b27dd02649ca1/contrib/markdown.tpl -o markdown.tpl
 
-    - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@0.20.0
-      with:
-        image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image_tag }}
-        format: 'template'
-        template: '@markdown.tpl'
-        output: trivy.md
-        exit-code: '1'
-        ignore-unfixed: true
-        vuln-type: 'os,library'
-        severity: 'CRITICAL,HIGH'
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          image-ref: ${{ fromJson(steps.meta.outputs.json).tags[0] }}
+          format: 'template'
+          template: '@api/markdown.tpl'
+          output: ./api/trivy.md
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
 
-    - run: cat trivy.md >> $GITHUB_STEP_SUMMARY
-      if: always()
+      - name: Add Trivy report to summary
+        if: always()
+        run: cat trivy.md && cat trivy.md >> $GITHUB_STEP_SUMMARY
