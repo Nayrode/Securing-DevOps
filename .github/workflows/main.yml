@@ -162,3 +162,47 @@ jobs:
       - name: Add Trivy report to summary
         if: always()
         run: cat trivy.md && cat trivy.md >> $GITHUB_STEP_SUMMARY
+  
+  snyk-scan:
+    name: Snyk scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project source
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: Install Snyk CLI
+        run: pnpm install -g snyk
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Set Snyk token
+        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+
+      - name: Run Snyk test
+        run: snyk test --all-projects --json-file-output=snyk-report.json
+
+      - name: Upload Snyk report
+        uses: actions/upload-artifact@v4
+        with:
+          name: snyk-report
+          path: ./api/snyk-report.json
+        
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: monitor
+          args: --workdir ./api
+      - name: Add Snyk report to summary 
+        if: always()
+        run: |
+          echo "### Snyk Report" >> $GITHUB_STEP_SUMMARY
+          echo "Snyk scan completed. Check the [Snyk report](./snyk-report.json) for details." >> $GITHUB_STEP_SUMMARY
+          echo "![Snyk badge](https://snyk.io/test/github/${{ github.repository }}/badge.svg)" >> $GITHUB_STEP_SUMMARY
+          
