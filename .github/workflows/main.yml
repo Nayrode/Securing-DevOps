@@ -32,10 +32,10 @@ jobs:
     - name: Checkout project source
       uses: actions/checkout@v4
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
       with:
-        node-version: '22.2.0'
+        version: 10
     - name: Install dependencies
       run: pnpm install
     - name: Run lint
@@ -77,10 +77,10 @@ jobs:
       - name: Checkout project source
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          node-version: '21.7.3'
+          version: 10
 
       - name: Enable corepack
         run: corepack enable
@@ -171,9 +171,6 @@ jobs:
         ignore-unfixed: true
         vuln-type: 'os,library'
         severity: 'CRITICAL,HIGH'
-
-    - run: cat trivy.md >> $GITHUB_STEP_SUMMARY
-      if: 'CRITICAL,HIGH'
 
     - run: cat trivy.md >> $GITHUB_STEP_SUMMARY
       if: always()
