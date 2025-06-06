@@ -22,7 +22,7 @@ image::./diagramme.png[]
 L’objectif des scans de sécurité est de détecter les vulnérabilités potentielles dans l’application afin de renforcer sa résilience face aux attaques. Deux types de scans ont été réalisés :
 
 - **SAST (Static Application Security Testing)** : Analyse du code source pour identifier les failles de sécurité avant l’exécution.
-- **Scan Trilli** : Analyse ciblée des configurations de l’infrastructure, notamment le service SMTP.
+- **Scan Trivi** : Analyse ciblée des configurations de l’infrastructure, notamment le service SMTP.
 
 Ces analyses permettent de prendre des mesures proactives avant la mise en production et de se conformer aux bonnes pratiques de sécurité logicielle.
 
@@ -49,7 +49,7 @@ Dautres vinérabilitée ont étées trouvées, notament l'utilisation de la fonc
 
 === GitHub Action CI
 
-La CI de GitHub Action, avec l'utilisation des images de Trinik et Snyk, nous révèle les suivantes vulnérabilitées : 
+La CI de GitHub Action, avec l'utilisation des images de Trivi et Snyk, nous révèle les suivantes vulnérabilitées : 
 
 * **Vulnérabilité 1** : `Node.js` – Mettre à jour la verison de Cross-spawn vers 7.0.5 pour avoir une version plus stable.
 
