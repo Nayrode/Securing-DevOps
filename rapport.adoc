@@ -1,10 +1,10 @@
 = Rapport de projet
-De Martino Giada Flora, Dorain Tetu 
+De Martino Giada Flora, Dorian Tetu
 :title-page:
 :toc:
 
 <<<
-== Introduction
+## Introduction
 
 **Beep** est une application de messagerie sociale permettant aux utilisateurs de **communiquer, créer des communautés et interagir en temps réel**. Elle propose une expérience complète mêlant messagerie instantanée, appels audio/vidéo, partage de fichiers et gestion collaborative de serveurs (espaces de discussion).
 
@@ -12,55 +12,106 @@ Son architecture repose sur une infrastructure distribuée intégrant un backend
 
 Ce rapport détaille les résultats de ces analyses, les risques identifiés, ainsi que les actions correctives recommandées pour renforcer la sécurité globale du projet.
 
-== Diagramme d'architecture
+## Diagramme d'architecture
 
 .Diagramme d'architecture du projet Beep
 image::./diagramme.png[]
 
-== Pourquoi effectuer des scans de sécurité
+## Pourquoi effectuer des scans de sécurité
 
 L’objectif des scans de sécurité est de détecter les vulnérabilités potentielles dans l’application afin de renforcer sa résilience face aux attaques. Deux types de scans ont été réalisés :
 
-- **SAST (Static Application Security Testing)** : Analyse du code source pour identifier les failles de sécurité avant l’exécution.
-- **Scan Trivi** : Analyse ciblée des configurations de l’infrastructure, notamment le service SMTP.
+* **SAST (Static Application Security Testing)** : Analyse du code source pour identifier les failles de sécurité avant l’exécution. Cette méthode permet de cibler les failles dès les premières phases du développement.
+* **Scan Trivi** : Analyse ciblée des configurations de l’infrastructure, notamment du service SMTP, qui est un vecteur critique dans le contexte d’une application de messagerie.
 
-Ces analyses permettent de prendre des mesures proactives avant la mise en production et de se conformer aux bonnes pratiques de sécurité logicielle.
+Ces analyses permettent de prendre des mesures proactives avant la mise en production, de se conformer aux bonnes pratiques de sécurité logicielle, et de limiter les risques liés à l’exploitation de failles connues.
 
-== Résultats des scans
+## Résultats des scans
 
-=== SAST IriusRisk
+### SAST IriusRisk
 
-Voici les 5 *threats* les plus critiques identifiés dans l'application Beep, principalement centrés autour du protocole SMTP :
+Voici les cinq *threats* les plus critiques identifiés dans l'application Beep, principalement liés à la gestion du protocole SMTP :
 
-* **Threat 1** : `SMTP` – *Mise en œuvre de STARTTLS*, implémenter STARTTLS pour chiffrer la transmission des e-mails et éviter l’interception de données sensibles.
-* **Threat 2** : `SMTP` – *Limiter le taux d’envoi (Rate Limiting)*, prévenir les attaques de type flood en limitant le nombre de messages envoyés par IP ou utilisateur.
-* **Threat 3** : `SMTP` – *Configuration sécurisée et audits réguliers*, éviter les fuites de données dues à une mauvaise configuration en auditant régulièrement les serveurs SMTP.
-* **Threat 4** : `SMTP` – *Authentification des e-mails*, protéger contre l’usurpation d’identité via SPF, DKIM et DMARC.
-* **Threat 5** : `SMTP` – *Authentification et prévention du relai non autorisé*, empêcher l’utilisation non autorisée du serveur SMTP comme relais en appliquant des contrôles stricts.
+* **Threat 1** : `SMTP - STARTTLS non activé`
+  → Le chiffrement des communications SMTP via STARTTLS est essentiel pour éviter l'interception des messages par des tiers. L'absence de cette couche rend les communications vulnérables à l'écoute passive (attaque de type *man-in-the-middle*).
 
-=== SAST Snyk
+* **Threat 2** : `SMTP - Absence de rate limiting`
+  → Sans limitation du nombre de messages envoyés par IP ou utilisateur, l’infrastructure est exposée à des attaques par saturation (flood), pouvant impacter la disponibilité du service.
 
-Le scan Snyk a révélé plusieurs vulnérabilités dans les dépendances du projet Beep, notamment :
+* **Threat 3** : `SMTP - Configuration non auditée régulièrement`
+  → Des erreurs ou oublis dans la configuration peuvent introduire des vulnérabilités. Des audits réguliers automatisés permettraient de détecter rapidement tout changement ou mauvaise configuration.
 
-* **Vulnérabilité 1** : `Dockerfile` – Mettre à jour la verison de Node vers 22.16.0 pour corriger des failles critiques.
-* **Vulnérabilité 2** : `Hardcoded Secret` – Changer la valeur utilisée comme clé de chiffrement (dans jsonwebtoken.default.sign). Utiliser la valeur définie de `APP_KEY` dans le `.env`.
+* **Threat 4** : `SMTP - Absence de contrôle d’authenticité des e-mails`
+  → Le manque d’authentification des e-mails via SPF, DKIM et DMARC expose les utilisateurs à des tentatives de phishing et à l’usurpation d’identité.
 
-Dautres vinérabilitée ont étées trouvées, notament l'utilisation de la fonction send() dans le code source, qui peut exposer des données sensibles si mal configurée.
+* **Threat 5** : `SMTP - Relais ouvert`
+  → Laisser le serveur SMTP agir comme relais non authentifié permet à des tiers d’envoyer des courriers frauduleux, ce qui peut faire inscrire le domaine sur des listes noires (blacklists).
 
-=== GitHub Action CI
+### SAST Snyk
 
-La CI de GitHub Action, avec l'utilisation des images de Trivi et Snyk, nous révèle les suivantes vulnérabilitées : 
+Le scan Snyk s’est concentré sur les dépendances et la sécurité du code. Les principales vulnérabilités sont les suivantes :
 
-* **Vulnérabilité 1** : `Node.js` – Mettre à jour la verison de Cross-spawn vers 7.0.5 pour avoir une version plus stable.
+* **Vulnérabilité 1** : `Dockerfile - Version de Node obsolète`
+  → La version utilisée présentait des failles critiques. Il est recommandé d’utiliser au minimum la version `22.16.0` de Node.js.
 
-== Exploitation des résultats et plan d'action
+* **Vulnérabilité 2** : `Hardcoded Secret`
+  → Un secret de chiffrement était codé en dur dans le code source (`jsonwebtoken.default.sign`). Ce type de pratique est à proscrire. Il faut utiliser une variable d’environnement (`APP_KEY`) définie dans un fichier `.env` sécurisé.
 
-Les résultats obtenus orientent la sécurisation du serveur SMTP, composant central de Beep. Voici les actions prioritaires recommandées :
+* D’autres vulnérabilités incluent l’utilisation peu sécurisée de certaines fonctions comme `send()`, qui, si mal paramétrée, peut divulguer des données sensibles, notamment en cas de mauvaise gestion des erreurs.
 
-- Mettre à jour la configuration du serveur SMTP pour activer STARTTLS et restreindre les connexions non sécurisées.
-- Implémenter une politique de *rate limiting* adaptée aux usages réels.
-- Mettre en place des audits automatiques et périodiques de la configuration SMTP.
-- Ajouter les enregistrements DNS nécessaires pour SPF, DKIM et DMARC afin de renforcer la légitimité des e-mails.
-- Appliquer une authentification forte sur les comptes SMTP et désactiver tout relai non autorisé.
+### GitHub Action CI
 
-Ces mesures amélioreront considérablement la sécurité de l’application et réduiront le risque de compromission via le canal de communication e-mail.
+L’intégration continue (CI) via GitHub Actions permet d’automatiser les tests et les analyses de sécurité. Les résultats des scans exécutés dans ce cadre indiquent :
+
+* **Vulnérabilité 1** : `Cross-spawn - Version obsolète`
+  → La version utilisée doit être mise à jour vers `7.0.5` pour corriger des failles connues et améliorer la stabilité générale des workflows CI.
+
+## Exploitation des résultats et plan d'action
+
+Les résultats obtenus orientent la sécurisation du serveur SMTP, qui constitue un point d’entrée particulièrement sensible dans l’architecture de Beep. Un plan d’action structuré, par priorité, est indispensable pour assurer la sécurité globale du système.
+
+### Tâches à prioriser immédiatement (urgence haute)
+
+1. **Activer STARTTLS** :
+   Implémenter et forcer STARTTLS sur le serveur SMTP pour assurer le chiffrement des e-mails.
+
+2. **Mettre à jour les dépendances critiques** :
+
+   * Mettre à jour Node.js (`22.16.0`).
+   * Mettre à jour `Cross-spawn`.
+   * Corriger toutes les dépendances listées par Snyk et Trivi.
+
+3. **Remplacer les secrets codés en dur** :
+   Référencer les clés dans un fichier `.env`, avec gestion sécurisée via un coffre de secrets (Vault ou équivalent).
+
+### Tâches à mener à court terme
+
+1. **Implémenter une politique de *rate limiting*** :
+   Protéger le service SMTP contre les abus en définissant des quotas par utilisateur/IP.
+
+2. **Configurer l’authentification des e-mails** :
+   Ajouter les enregistrements DNS nécessaires pour activer SPF, DKIM et DMARC. Cela contribuera aussi à la délivrabilité des messages.
+
+3. **Désactiver tout relais SMTP non autorisé** :
+   Vérifier que seul le trafic authentifié est autorisé à transiter par le serveur.
+
+### Tâches à intégrer à moyen terme
+
+1. **Mettre en place des audits réguliers de configuration** :
+   Automatiser les contrôles de configuration SMTP (via Ansible, OpenSCAP ou des scripts internes).
+
+2. **Renforcer la CI/CD avec des règles de sécurité strictes** :
+
+   * Ajouter des vérifications dans la pipeline CI pour détecter les secrets accidentellement poussés.
+   * Intégrer des scans réguliers de vulnérabilités avant chaque déploiement.
+
+3. **Documenter et former l’équipe** :
+   Rédiger des bonnes pratiques de sécurité, faire des formations internes sur la gestion des secrets et la configuration sécurisée des services.
+
+### Conclusion
+
+La sécurisation de l’application Beep passe par une vigilance constante, dès les phases de développement jusqu’à la mise en production. Les résultats des analyses montrent une exposition critique du serveur SMTP, mais également des problèmes dans les dépendances logicielles et la gestion des secrets.
+
+Grâce aux actions proposées, il est possible de réduire considérablement la surface d’attaque en quelques étapes ciblées. À terme, nous visons non seulement la correction des vulnérabilités actuelles, mais également l’instauration d’une culture de sécurité continue, intégrée à nos processus DevOps. La priorisation des tâches en trois phases permet une montée en sécurité progressive, tout en assurant la stabilité du projet.
+
+Un suivi régulier des actions, ainsi que la mise en place de métriques de sécurité, permettront de s’assurer de l’efficacité des mesures appliquées et d’anticiper les menaces futures.
