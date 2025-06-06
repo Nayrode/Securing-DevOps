@@ -22,7 +22,7 @@ image::./diagramme.png[]
 L’objectif des scans de sécurité est de détecter les vulnérabilités potentielles dans l’application afin de renforcer sa résilience face aux attaques. Deux types de scans ont été réalisés :
 
 * **SAST (Static Application Security Testing)** : Analyse du code source pour identifier les failles de sécurité avant l’exécution. Cette méthode permet de cibler les failles dès les premières phases du développement.
-* **Scan Trivi** : Analyse ciblée des configurations de l’infrastructure, notamment du service SMTP, qui est un vecteur critique dans le contexte d’une application de messagerie.
+* **Scan Trivy** : Analyse ciblée des configurations de l’infrastructure, notamment du service SMTP, qui est un vecteur critique dans le contexte d’une application de messagerie.
 
 Ces analyses permettent de prendre des mesures proactives avant la mise en production, de se conformer aux bonnes pratiques de sécurité logicielle, et de limiter les risques liés à l’exploitation de failles connues.
 
@@ -79,7 +79,7 @@ Les résultats obtenus orientent la sécurisation du serveur SMTP, qui constitue
 
    * Mettre à jour Node.js (`22.16.0`).
    * Mettre à jour `Cross-spawn`.
-   * Corriger toutes les dépendances listées par Snyk et Trivi.
+   * Corriger toutes les dépendances listées par Snyk et Trivy.
 
 3. **Remplacer les secrets codés en dur** :
    Référencer les clés dans un fichier `.env`, avec gestion sécurisée via un coffre de secrets (Vault ou équivalent).
@@ -105,8 +105,8 @@ Les résultats obtenus orientent la sécurisation du serveur SMTP, qui constitue
    * Ajouter des vérifications dans la pipeline CI pour détecter les secrets accidentellement poussés.
    * Intégrer des scans réguliers de vulnérabilités avant chaque déploiement.
 
-3. **Documenter et former l’équipe** :
-   Rédiger des bonnes pratiques de sécurité, faire des formations internes sur la gestion des secrets et la configuration sécurisée des services.
+3. **Documenter** :
+   Rédiger des bonnes pratiques de sécurité sur la gestion des secrets et la configuration sécurisée des services.
 
 ### Conclusion
 
