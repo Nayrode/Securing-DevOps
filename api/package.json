@@ -91,7 +91,7 @@
     "@aws-sdk/s3-request-presigner": "^3.688.0",
     "@japa/expect": "^3.0.2",
     "@opentelemetry/auto-instrumentations-node": "^0.55.1",
-    "@opentelemetry/exporter-trace-otlp-http": "^0.57.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.201.1",
     "@opentelemetry/resources": "^1.30.0",
     "@opentelemetry/sdk-node": "^0.57.0",
     "@opentelemetry/semantic-conventions": "^1.28.0",
